@@ -1,4 +1,26 @@
+# Python 虚拟环境
 venv/
+env/
+ENV/
+
+# Python 缓存
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+
+# macOS
 .DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# 临时文件
+*.log
+*.tmp
