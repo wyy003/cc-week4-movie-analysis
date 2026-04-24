@@ -1,0 +1,221 @@
+import json
+from datetime import datetime
+
+# 读取数据摘要
+with open('data_summary.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+# 生成 HTML 报告
+html_content = f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电影票房数据分析报告</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }}
+        .container {{
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }}
+        h1 {{
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }}
+        h2 {{
+            color: #34495e;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 4px solid #3498db;
+        }}
+        .meta {{
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }}
+        .summary-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }}
+        .summary-card {{
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+        }}
+        .summary-card .label {{
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }}
+        .summary-card .value {{
+            color: #2c3e50;
+            font-size: 24px;
+            font-weight: bold;
+        }}
+        .chart-section {{
+            margin-bottom: 50px;
+        }}
+        .chart-section img {{
+            width: 100%;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 15px;
+        }}
+        .chart-description {{
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }}
+        th, td {{
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }}
+        th {{
+            background: #34495e;
+            color: white;
+            font-weight: 600;
+        }}
+        tr:hover {{
+            background: #f8f9fa;
+        }}
+        .footer {{
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 电影票房数据分析报告</h1>
+        <div class="meta">生成时间: {data['生成时间']}</div>
+
+        <h2>数据集概况</h2>
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="label">总电影数</div>
+                <div class="value">{data['数据集概况']['总电影数']}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">年份范围</div>
+                <div class="value">{data['数据集概况']['年份范围']}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">总票房</div>
+                <div class="value">{data['数据集概况']['总票房']}<span style="font-size:14px">M</span></div>
+            </div>
+            <div class="summary-card">
+                <div class="label">平均票房</div>
+                <div class="value">{data['数据集概况']['平均票房']}<span style="font-size:14px">M</span></div>
+            </div>
+        </div>
+
+        <h2>Top 5 高票房电影</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>排名</th>
+                    <th>电影名称</th>
+                    <th>票房（百万美元）</th>
+                    <th>上映年份</th>
+                    <th>类型</th>
+                </tr>
+            </thead>
+            <tbody>
+"""
+
+for movie in data['Top5电影']:
+    html_content += f"""                <tr>
+                    <td>{movie['排名']}</td>
+                    <td>{movie['电影名称']}</td>
+                    <td>{movie['票房']}</td>
+                    <td>{movie['年份']}</td>
+                    <td>{movie['类型']}</td>
+                </tr>
+"""
+
+html_content += """            </tbody>
+        </table>
+
+        <h2>可视化分析</h2>
+
+        <div class="chart-section">
+            <h3>1. Top 10 票房电影排行</h3>
+            <img src="chart_top10.png" alt="Top 10 票房电影">
+            <div class="chart-description">
+                展示票房最高的 10 部电影，阿凡达以 2847.2 百万美元位居榜首。
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h3>2. 各地区票房占比</h3>
+            <img src="chart_region_pie.png" alt="地区票房占比">
+            <div class="chart-description">
+                全球发行电影占据 83.8% 的票房份额，北美发行占 16.2%。
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h3>3. 年度平均票房趋势</h3>
+            <img src="chart_yearly_trend.png" alt="年度票房趋势">
+            <div class="chart-description">
+                2009 年因《阿凡达》创下最高平均票房记录，近年来高票房电影持续涌现。
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h3>4. 各类型电影平均票房对比</h3>
+            <img src="chart_genre_comparison.png" alt="类型票房对比">
+            <div class="chart-description">
+                科幻和动作类型电影在高票房榜单中表现突出，平均票房领先其他类型。
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>本报告由 Python + pandas + matplotlib 自动生成</p>
+            <p>Co-Authored-By: Claude Sonnet 4.6</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+# 保存 HTML 文件
+with open('movie_analysis_report.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print("✓ HTML 报告已生成: movie_analysis_report.html")
+print("\n可以用浏览器打开查看完整报告")
